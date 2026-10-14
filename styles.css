@@ -1,0 +1,134 @@
+/* Dashboard de Controle de ASO — base visual adaptada do dashboard de colaboradores.
+   Tokens de cor no início; tema claro/escuro automático (prefers-color-scheme).
+   Etapa 5: cartões dos colaboradores. Etapa 6: indicadores gerais. Etapa 7: pesquisa e filtros. */
+:root{
+  color-scheme:light dark;
+  --bg:#eceff3; --card:#ffffff; --texto:#1b2430; --suave:#5b6675; --borda:#d3d9e1;
+  --primaria:#2b5a85; --primaria-clara:#e3ecf5; --sombra:0 1px 2px rgba(16,24,40,.06);
+  --raio:8px;
+  --topo-bg:#141b24; --topo-borda:#0e131a; --topo-texto:#e8ecf2; --topo-suave:#9aa6b6;
+  /* Situação do ASO (cartões, Etapa 5) */
+  --vencido:#9b2c2c;  --vencido-fundo:#f6e2e2;   /* VENCIDO */
+  --vencehoje:#b03a0e; --vencehoje-fundo:#fbe3d4; /* VENCE HOJE */
+  --semdata:#4f5b6b;  --semdata-fundo:#e4e8ee;   /* SEM DATA */
+  --proximo:#8a5a12;  --proximo-fundo:#f6ecd6;   /* PRÓXIMO DO VENCIMENTO */
+  --emdia:#2b6a4a;    --emdia-fundo:#e0f0e8;     /* EM DIA */
+  --inconsistente:#5b4a8a; --inconsistente-fundo:#ebe6f6; /* DATA INCONSISTENTE */
+  /* Mensagens de importação (reaproveitam as cores, mas não significam situação de ASO) */
+  --msg-ok:#2b6a4a; --msg-ok-fundo:#e0f0e8; --msg-aviso:#8a5a12; --msg-aviso-fundo:#f6ecd6;
+  --msg-erro:#9b2c2c; --msg-erro-fundo:#f6e2e2; --btn-texto:#ffffff;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0d1218; --card:#151c25; --texto:#e4e8ee; --suave:#97a2b1; --borda:#2b3644;
+    --primaria:#7fa6cc; --primaria-clara:#1b2838; --sombra:none;
+    --topo-bg:#10161d; --topo-borda:#2b3644; --topo-texto:#e8ecf2; --topo-suave:#8f9bab;
+    --vencido:#e0908f;  --vencido-fundo:#331d20;
+    --vencehoje:#f0a273; --vencehoje-fundo:#35201a;
+    --semdata:#a9b3c1;  --semdata-fundo:#232b36;
+    --proximo:#d1a55a;  --proximo-fundo:#2a2313;
+    --emdia:#7fc3a0;    --emdia-fundo:#16291f;
+    --inconsistente:#b5a5e0; --inconsistente-fundo:#251f38;
+    --msg-ok:#7fc3a0; --msg-ok-fundo:#16291f; --msg-aviso:#d1a55a; --msg-aviso-fundo:#2a2313;
+    --msg-erro:#e0908f; --msg-erro-fundo:#331d20; --btn-texto:#0d1218;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--texto)}
+.topo{background:var(--topo-bg);border-bottom:1px solid var(--topo-borda)}
+.topo__conteudo{max-width:1280px;margin:0 auto;padding:22px 20px}
+.topo h1{margin:0;font-size:1.5rem;color:var(--topo-texto)}
+.topo p{margin:4px 0 0;color:var(--topo-suave);font-size:.95rem}
+.container{max-width:1280px;margin:0 auto;padding:20px}
+
+/* Botões (mesmo padrão da referência) */
+.btn{height:42px;padding:0 16px;font:inherit;font-size:.95rem;font-weight:600;color:var(--primaria);
+  background:var(--primaria-clara);border:1px solid transparent;border-radius:6px;cursor:pointer}
+.btn:hover{filter:brightness(.96)}
+.btn:focus-visible{outline:2px solid var(--primaria);outline-offset:2px}
+.btn:disabled{opacity:.6;cursor:progress}
+.btn--primario{background:var(--primaria);color:var(--btn-texto)}
+
+/* Importação da planilha */
+.importacao{background:var(--card);border:1px solid var(--borda);border-radius:var(--raio);padding:16px;box-shadow:var(--sombra)}
+.importacao__topo{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.importacao__intro{flex:1 1 320px;min-width:0}
+.importacao h2{margin:0 0 4px;font-size:1.05rem}
+.importacao__intro p{margin:0;color:var(--suave);font-size:.9rem;line-height:1.5}
+.importacao__privacidade{margin:12px 0 0;color:var(--suave);font-size:.82rem;line-height:1.5}
+.importacao__status{margin-top:14px;padding:12px 14px;border:1px solid var(--borda);border-left-width:4px;border-radius:6px;background:var(--bg)}
+.importacao__status p{margin:0}
+.importacao__status-titulo{font-weight:600;font-size:.92rem;overflow-wrap:anywhere}
+.importacao__status-detalhe{margin-top:4px!important;color:var(--suave);font-size:.82rem;line-height:1.5;overflow-wrap:anywhere}
+.importacao__avisos{margin:10px 0 0;padding-left:18px;font-size:.82rem;line-height:1.5;overflow-wrap:anywhere}
+.importacao__avisos li+li{margin-top:4px}
+.importacao__status--vazio .importacao__status-titulo,.importacao__status--lendo .importacao__status-titulo{color:var(--suave);font-weight:500}
+.importacao__status--ok{border-left-color:var(--msg-ok);background:var(--msg-ok-fundo)}
+.importacao__status--aviso{border-left-color:var(--msg-aviso);background:var(--msg-aviso-fundo)}
+.importacao__status--erro{border-left-color:var(--msg-erro);background:var(--msg-erro-fundo)}
+.importacao__status--erro .importacao__status-titulo{color:var(--msg-erro)}
+@media(max-width:560px){.importacao__topo .btn{width:100%}}
+
+/* Cartões dos colaboradores (Etapa 5) */
+.colaboradores{margin-top:20px}
+.colaboradores h2{margin:0 0 12px;font-size:1.05rem}
+.cartoes__vazio{margin:0;padding:24px 16px;text-align:center;color:var(--suave);background:var(--card);border:1px dashed var(--borda);border-radius:var(--raio);line-height:1.5}
+.cartoes__grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.cartao{--cor:var(--semdata);--fundo:var(--semdata-fundo);min-width:0;background:var(--card);border:1px solid var(--borda);border-left:5px solid var(--cor);border-radius:var(--raio);padding:14px;box-shadow:var(--sombra)}
+.cartao--vencido{--cor:var(--vencido);--fundo:var(--vencido-fundo)}
+.cartao--vence-hoje{--cor:var(--vencehoje);--fundo:var(--vencehoje-fundo)}
+.cartao--proximo{--cor:var(--proximo);--fundo:var(--proximo-fundo)}
+.cartao--em-dia{--cor:var(--emdia);--fundo:var(--emdia-fundo)}
+.cartao--sem-data{--cor:var(--semdata);--fundo:var(--semdata-fundo)}
+.cartao--data-inconsistente{--cor:var(--inconsistente);--fundo:var(--inconsistente-fundo)}
+.cartao__topo{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:flex-start;justify-content:space-between}
+.cartao__nome{margin:0;flex:1 1 150px;min-width:0;font-size:1rem;line-height:1.3;overflow-wrap:anywhere}
+.cartao__selo{flex:0 0 auto;max-width:100%;padding:3px 9px;border-radius:999px;background:var(--fundo);color:var(--cor);border:1px solid var(--cor);font-size:.72rem;font-weight:700;letter-spacing:.02em;line-height:1.3}
+.cartao__situacao{margin:8px 0 0;padding:7px 10px;border-radius:6px;background:var(--fundo);color:var(--cor);font-size:.86rem;font-weight:600;line-height:1.4}
+.cartao__campos{margin:12px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.cartao__campos>div{min-width:0}
+.cartao__campos dt{font-size:.72rem;color:var(--suave);text-transform:uppercase;letter-spacing:.03em}
+.cartao__campos dd{margin:2px 0 0;font-size:.9rem;overflow-wrap:anywhere}
+.cartao__vazio{color:var(--suave);font-style:italic}
+@media(max-width:360px){.cartoes__grade{grid-template-columns:minmax(0,1fr)}.cartao__campos{grid-template-columns:1fr}}
+
+/* Indicadores gerais (Etapa 6): só informativos, sem clique. Reutilizam os tokens de situação dos cartões. */
+.indicadores{margin-top:20px}
+.indicadores h2{margin:0 0 12px;font-size:1.05rem}
+.indicadores__grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0}
+.indicador{--cor:var(--texto);display:flex;flex-direction:column;min-width:0;background:var(--card);border:1px solid var(--borda);border-top:4px solid var(--cor);border-radius:var(--raio);padding:12px 14px;box-shadow:var(--sombra)}
+.indicador--vencido{--cor:var(--vencido)}
+.indicador--vence-hoje{--cor:var(--vencehoje)}
+.indicador--proximo{--cor:var(--proximo)}
+.indicador--em-dia{--cor:var(--emdia)}
+.indicador--sem-data{--cor:var(--semdata)}
+.indicador--data-inconsistente{--cor:var(--inconsistente)}
+.indicador dt{font-size:.78rem;line-height:1.35;color:var(--suave);overflow-wrap:anywhere}
+.indicador dt small{display:block;font-size:.72rem}
+.indicador__valor{margin:auto 0 0;padding-top:6px;font-size:1.8rem;font-weight:700;line-height:1.1;color:var(--cor)}
+/* Antes da primeira importação: aparência neutra, sem cor de situação */
+.indicadores[data-estado="vazio"] .indicador{--cor:var(--borda)}
+.indicadores[data-estado="vazio"] .indicador__valor{color:var(--suave)}
+@media(max-width:560px){.indicador--total{grid-column:1/-1}}
+@media(max-width:360px){.indicadores__grade{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Pesquisa e filtros (Etapa 7): acima dos cartões. Reaproveitam os tokens de cor (claro/escuro). */
+.filtros{display:grid;gap:12px;margin:0 0 14px;padding:14px;background:var(--card);border:1px solid var(--borda);border-radius:var(--raio);box-shadow:var(--sombra)}
+.filtros label{display:block;margin:0 0 4px;font-size:.72rem;color:var(--suave);text-transform:uppercase;letter-spacing:.03em}
+.filtros input,.filtros select{display:block;width:100%;min-width:0;height:40px;padding:0 10px;font:inherit;font-size:.92rem;color:var(--texto);background:var(--bg);border:1px solid var(--borda);border-radius:6px}
+.filtros select{text-overflow:ellipsis}
+.filtros input:focus-visible,.filtros select:focus-visible{outline:2px solid var(--primaria);outline-offset:1px}
+.filtros input:disabled,.filtros select:disabled{opacity:.55;cursor:not-allowed}
+.filtros__campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.filtros__busca,.filtros__campo{min-width:0}
+.filtros__rodape{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.filtros__contador{margin:0;font-size:.9rem;font-weight:600}
+@media(max-width:560px){.filtros__campos{grid-template-columns:repeat(2,minmax(0,1fr))}.filtros__rodape .btn{width:100%}}
+@media(max-width:360px){.filtros__campos{grid-template-columns:minmax(0,1fr)}}
+
+/* Refinamento visual (Etapa 8): os rótulos dos filtros apareciam cortados ("Todas as situ…", "Todos os superviso…") em 390 px e em 1280 px.
+   Menos colunas = campos mais largos e texto inteiro legível; 6 colunas só em telas bem largas. Nada mais foi redesenhado. */
+.filtros__campos{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(min-width:1500px){.filtros__campos{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media(max-width:700px){.filtros__campos{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.filtros__campos{grid-template-columns:minmax(0,1fr)}}
