@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <!-- Privacidade: a página só carrega arquivos do próprio projeto e não pode fazer requisições de rede (connect-src 'none'). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+  <title>Controle de ASO | Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="topo__conteudo">
+      <h1>Controle de ASO</h1>
+      <p>Acompanhamento dos vencimentos de ASO dos colaboradores</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="importacao" aria-labelledby="importacao-titulo">
+      <div class="importacao__topo">
+        <div class="importacao__intro">
+          <h2 id="importacao-titulo">Dados</h2>
+          <p>Baixe a planilha atualizada do Google Sheets (<em>Arquivo → Fazer download</em>, em <strong>.xlsx</strong> ou
+            <strong>.csv</strong>) e selecione o arquivo aqui.</p>
+        </div>
+        <button id="btn-importar" class="btn btn--primario" type="button">Importar planilha</button>
+        <input id="arquivo" type="file" accept=".xlsx,.csv" hidden>
+      </div>
+      <p class="importacao__privacidade">🔒 O arquivo é lido somente neste navegador: não é enviado a nenhum servidor nem salvo.
+        Os dados ficam apenas na memória desta página; ao recarregá-la, importe de novo.</p>
+      <div id="importacao-status" class="importacao__status importacao__status--vazio" role="status" aria-live="polite">
+        <p id="importacao-titulo-status" class="importacao__status-titulo">Nenhuma planilha importada.</p>
+        <p id="importacao-detalhe" class="importacao__status-detalhe" hidden></p>
+        <ul id="importacao-avisos" class="importacao__avisos" hidden></ul>
+      </div>
+    </section>
+
+    <section id="indicadores" class="indicadores" data-estado="vazio" aria-labelledby="indicadores-titulo">
+      <h2 id="indicadores-titulo">Indicadores</h2>
+      <dl class="indicadores__grade">
+        <div class="indicador indicador--total" data-indicador="total"><dt>Total de registros</dt><dd class="indicador__valor">–</dd></div>
+        <div class="indicador indicador--vencido" data-indicador="vencido"><dt>Vencidos</dt><dd class="indicador__valor">–</dd></div>
+        <div class="indicador indicador--vence-hoje" data-indicador="vence-hoje"><dt>Vencem hoje</dt><dd class="indicador__valor">–</dd></div>
+        <div class="indicador indicador--proximo" data-indicador="proximo"><dt>Próximos do vencimento <small data-dias-alerta></small></dt><dd class="indicador__valor">–</dd></div>
+        <div class="indicador indicador--em-dia" data-indicador="em-dia"><dt>Em dia</dt><dd class="indicador__valor">–</dd></div>
+        <div class="indicador indicador--sem-data" data-indicador="sem-data"><dt>Sem data de vencimento válida</dt><dd class="indicador__valor">–</dd></div>
+        <div class="indicador indicador--data-inconsistente" data-indicador="data-inconsistente"><dt>Data inconsistente</dt><dd class="indicador__valor">–</dd></div>
+      </dl>
+    </section>
+
+    <section class="colaboradores" aria-labelledby="colaboradores-titulo">
+      <h2 id="colaboradores-titulo">Colaboradores</h2>
+      <div id="filtros" class="filtros" role="search" aria-label="Pesquisa e filtros dos colaboradores">
+        <div class="filtros__busca">
+          <label for="filtro-busca">Pesquisar colaborador</label>
+          <input id="filtro-busca" type="search" placeholder="Digite o nome do colaborador" autocomplete="off" spellcheck="false" disabled>
+        </div>
+        <div class="filtros__campos">
+          <div class="filtros__campo"><label for="filtro-situacao">Situação do ASO</label><select id="filtro-situacao" disabled><option value="">Todas as situações</option></select></div>
+          <div class="filtros__campo"><label for="filtro-supervisor">Supervisor</label><select id="filtro-supervisor" disabled><option value="">Todos os supervisores</option></select></div>
+          <div class="filtros__campo"><label for="filtro-gerente">Gerente</label><select id="filtro-gerente" disabled><option value="">Todos os gerentes</option></select></div>
+          <div class="filtros__campo"><label for="filtro-loja">Loja</label><select id="filtro-loja" disabled><option value="">Todas as lojas</option></select></div>
+          <div class="filtros__campo"><label for="filtro-funcao">Função</label><select id="filtro-funcao" disabled><option value="">Todas as funções</option></select></div>
+          <div class="filtros__campo"><label for="filtro-municipio">Município</label><select id="filtro-municipio" disabled><option value="">Todos os municípios</option></select></div>
+        </div>
+        <div class="filtros__rodape">
+          <p id="filtros-contador" class="filtros__contador" role="status" aria-live="polite">Exibindo 0 de 0 registros</p>
+          <button id="btn-limpar-filtros" class="btn" type="button" disabled>Limpar filtros</button>
+        </div>
+      </div>
+      <div id="lista-cartoes"></div>
+    </section>
+  </main>
+
+  <script src="js/vendor/read-excel-file.min.js"></script>
+  <script src="js/importador.js"></script>
+  <script src="js/dados.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/aso.js"></script>
+  <script src="js/filters.js"></script><!-- antes do render.js: ao importar, os filtros são limpos antes de os cartões serem redesenhados -->
+  <script src="js/ordenacao.js"></script><!-- Etapa 8: ordem por urgência, aplicada pelo render.js à lista já filtrada -->
+  <script src="js/render.js"></script>
+  <script src="js/indicadores.js"></script>
+  <script src="js/atualizacao.js"></script><!-- Etapa 8: detecta a virada do dia e pede o recálculo ao Aso -->
+  <script src="js/script.js"></script>
+</body>
+</html>

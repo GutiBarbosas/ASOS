@@ -1,0 +1,23 @@
+# Sistema / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Planilhas de origem: contêm dados pessoais e ocupacionais (nome, CNPJ, nascimento, ASO)
+~$*.xls*
+*.xlsx
+*.xls
+*.csv
+
+# O projeto NÃO tem base de dados fixa: a planilha é importada manualmente no navegador (Etapa 3).
+# Proteção extra: nenhum arquivo de dados gerado deve ser versionado.
+data/
+
+# Node / Python
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+.env
+*.log
